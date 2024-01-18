@@ -1,5 +1,10 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
+
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        super().get_queryset().filter(status=Post.Status.PUBLISHED)
 
 # Create your models here.
 class Post(models.Model):
@@ -14,7 +19,10 @@ class Post(models.Model):
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    created = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
+    status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
+    object = models.Manager()
+    published = PublishedManager()
     
     class Meta:
         ordering = ['-publish']
