@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
-        super().get_queryset().filter(status=Post.Status.PUBLISHED)
+        return super().get_queryset().filter(status=Post.Status.PUBLISHED)
 
 # Create your models here.
 class Post(models.Model):
