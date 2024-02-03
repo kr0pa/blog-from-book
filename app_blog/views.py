@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
-from .models import Post
+from .models import Post, Comment
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
-from .forms import EmailPostForm
+from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
+from django.views.decorators.http import require_POST
 
 class PostListView(ListView):
     queryset = Post.published.all()
@@ -26,6 +27,7 @@ class PostListView(ListView):
     
 #     return render(request, 'blog/post/list.html', {'posts': posts})
 
+
 def post_detail(request, year, month, day, post):
     # try:
     #     post = Post.objects.get(id=pk)
@@ -36,6 +38,7 @@ def post_detail(request, year, month, day, post):
     post = get_object_or_404(Post, status=Post.Status.PUBLISHED, publish__year=year, publish__month=month, publish__day=day, slug=post)
     
     return render(request, 'blog/post/detail.html', {'post': post})
+
 
 def post_share(request, pk):
     post = get_object_or_404(Post, id=pk, status=Post.Status.PUBLISHED)
@@ -56,3 +59,17 @@ def post_share(request, pk):
         form = EmailPostForm()
 
     return render(request, 'blog/post/share.html', {'post': post, 'form': form, 'sent': sent})
+
+
+@require_POST
+def post_comment(request, pk):
+    post = get_object_or_404(Post, id=pk, status=Post.Status.PUBLISHED)
+    comment = None
+    form = CommentForm(data=request.POST)
+    
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.post = post
+        comment.save()
+    
+    return render(request, 'blog/post/comment.html', {'post': post, 'form': form, 'comment': comment})
