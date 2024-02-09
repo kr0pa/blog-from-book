@@ -51,7 +51,6 @@ def post_share(request, pk):
         
         if form.is_valid():
             cd = form.cleaned_data
-            print(cd)
             post_url = request.build_absolute_uri(post.get_absolute_url())
             subject = f"{cd['name']} zalecia Ci przeczytanie {post.title}"
             message = f"Przeczytaj {post.title} pod adresem {post_url}\n\n komentarze {cd['name']}: {cd['comments']}"
