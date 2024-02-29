@@ -9,9 +9,10 @@
   {% for post in posts %}
     {% comment %} <h2><a href="{% url 'app_blog:post_detail' post.id %}">{{ post.title }}</a></h2> {% endcomment %}
     <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+    <p class="tags">Tagi: {{ post.tags.all|join:', ' }}</p>
     <p class="date">Opublikowany {{ post.publish }} przez {{ post.author }}</p>
     {{ post.body|truncatewords:30|linebreaks }}
   {% endfor %}
-    {% comment %} {% include "pagination.html" with page=posts %} {% endcomment %}
-    {% include "pagination.html" with page=page_obj %}
+    {% include "pagination.html" with page=posts %}
+    {% comment %} {% include "pagination.html" with page=page_obj %} {% endcomment %}
 {% endblock %}
