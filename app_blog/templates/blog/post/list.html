@@ -6,10 +6,19 @@
 
 {% block content %}
   <h1>Mój blog</h1>
+  {% if tag %}
+    <h2>Posty oznaczone tagiem "{{ tag.name }}"</h2>
+  {% endif %}
   {% for post in posts %}
     {% comment %} <h2><a href="{% url 'app_blog:post_detail' post.id %}">{{ post.title }}</a></h2> {% endcomment %}
     <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
-    <p class="tags">Tagi: {{ post.tags.all|join:', ' }}</p>
+    {% comment %} <p class="tags">Tagi: {{ post.tags.all|join:', ' }}</p> {% endcomment %}
+    {% for tag in post.tags.all %}
+      <a href="{% url 'app_blog:post_tag_list' tag.slug %}">
+        {{ tag.name }}
+      </a>
+      {% if not forloop.last %}, {% endif %}
+    {% endfor %}
     <p class="date">Opublikowany {{ post.publish }} przez {{ post.author }}</p>
     {{ post.body|truncatewords:30|linebreaks }}
   {% endfor %}

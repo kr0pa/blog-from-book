@@ -17,14 +17,15 @@ from taggit.models import Tag
 # Create your views here.
 def post_list(request, tag_slug=None):
     post_list = Post.published.all()
-    tag = None
     
+    tag = None
     if tag_slug:
         tag = get_object_or_404(Tag, slug=tag_slug)
-        post_list.filter(tags__in=[tag])
+        post_list = post_list.filter(tags__in=[tag])
     
     paginator = Paginator(post_list, 3)
     page_number = request.GET.get('page', 1)
+    
     try:
         posts = paginator.page(page_number)
     except PageNotAnInteger:
